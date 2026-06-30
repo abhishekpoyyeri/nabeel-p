@@ -24,11 +24,11 @@ export default function Contact() {
         <AnimatedItem>
           <a
             href="mailto:Mahinshad37@gmail.com"
-            className="mt-10 inline-flex items-center gap-2 rounded-full bg-accent px-7 py-4 text-sm font-medium text-black transition-colors hover:bg-[var(--accent-dim)] accent-glow"
+            className="mt-10 inline-flex max-w-full items-center justify-center gap-2 rounded-full bg-accent px-5 py-4 text-xs font-medium text-black transition-colors hover:bg-[var(--accent-dim)] accent-glow sm:px-7 sm:text-sm"
           >
-            <EnvelopeSimple size={20} weight="fill" />
-            Mahinshad37@gmail.com
-            <ArrowUpRight size={18} />
+            <EnvelopeSimple size={20} weight="fill" className="shrink-0" />
+            <span className="truncate">Mahinshad37@gmail.com</span>
+            <ArrowUpRight size={18} className="shrink-0" />
           </a>
         </AnimatedItem>
 

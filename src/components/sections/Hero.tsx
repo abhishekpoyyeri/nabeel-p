@@ -38,6 +38,7 @@ const ANNOTATIONS = [
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -97,14 +98,18 @@ export default function Hero() {
   }, []);
 
   // ── Canvas sizing (DPR-aware) ──────────────────────────────────────────────
+  // Size to the *pinned wrapper*, not window.innerHeight. On mobile the URL bar
+  // shows/hides and innerHeight changes; the sticky element (sized in svh) is
+  // stable, so this keeps the canvas matched to what's actually on screen.
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const sticky = stickyRef.current;
+    if (!canvas || !sticky) return;
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const w = sticky.clientWidth || window.innerWidth;
+      const h = sticky.clientHeight || window.innerHeight;
       const zoom = w < 768 ? 1.3 : 1;
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
@@ -117,7 +122,13 @@ export default function Hero() {
 
     resize();
     window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
+    window.addEventListener("orientationchange", resize);
+    window.visualViewport?.addEventListener("resize", resize);
+    return () => {
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("orientationchange", resize);
+      window.visualViewport?.removeEventListener("resize", resize);
+    };
   }, []);
 
   // ── Render one frame for a given scroll progress (0..1) ────────────────────
@@ -164,10 +175,13 @@ export default function Hero() {
 
     const onScrollTick = () => {
       const section = sectionRef.current;
-      if (!section) return;
+      const sticky = stickyRef.current;
+      if (!section || !sticky) return;
       const rect = section.getBoundingClientRect();
-      const scrollable = section.offsetHeight - window.innerHeight;
-      const p = Math.min(1, Math.max(0, -rect.top / scrollable));
+      // Use the pinned element's height so progress maps 1:1 with the canvas.
+      const scrollable = section.offsetHeight - sticky.clientHeight;
+      const p =
+        scrollable > 0 ? Math.min(1, Math.max(0, -rect.top / scrollable)) : 0;
       render(p);
     };
 
@@ -194,9 +208,12 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative h-[400vh] scroll-animation"
+      className="relative h-[280vh] scroll-animation md:h-[400vh]"
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+      <div
+        ref={stickyRef}
+        className="sticky top-0 h-[100svh] w-full overflow-hidden"
+      >
         <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
 
         {/* Ghost wordmark + title overlay */}
@@ -204,29 +221,30 @@ export default function Hero() {
           ref={overlayRef}
           className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
         >
-          <span className="mb-5 inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium uppercase tracking-[0.25em] text-muted">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent accent-glow" />
+          <span className="mb-5 inline-flex max-w-[90vw] items-center gap-2 rounded-full glass px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.15em] text-muted md:px-4 md:text-xs md:tracking-[0.25em]">
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent accent-glow" />
             Biomedical · Student Consultant
           </span>
-          <h1 className="ghost-text text-[16vw] font-black leading-[0.82] tracking-tighter md:text-[14vw]">
+          <h1 className="ghost-text text-[19vw] font-black leading-[0.82] tracking-tighter sm:text-[16vw] md:text-[14vw]">
             AHAMED
             <br />
             NABEEL
           </h1>
-          <p className="mt-4 text-sm font-medium uppercase tracking-[0.4em] text-accent md:text-base">
+          <p className="mt-4 text-xs font-medium uppercase tracking-[0.3em] text-accent sm:text-sm sm:tracking-[0.4em] md:text-base">
             Med-Tech Explorer
           </p>
-          <p className="mt-8 flex flex-col items-center gap-2 text-xs uppercase tracking-[0.3em] text-muted">
+          <p className="mt-8 flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-muted sm:text-xs">
             Scroll to begin
             <span className="block h-10 w-px animate-pulse bg-gradient-to-b from-accent to-transparent" />
           </p>
         </div>
 
-        {/* Annotation cards */}
+        {/* Annotation cards — hidden on small screens so they don't overlap
+            the title; they read as floating accents on tablet/desktop. */}
         {ANNOTATIONS.map((a) => (
           <div
             key={a.id}
-            className={`pointer-events-none absolute ${a.pos} max-w-[180px] transition-all duration-500 ${
+            className={`pointer-events-none absolute hidden md:block ${a.pos} max-w-[180px] transition-all duration-500 ${
               visible.includes(a.id)
                 ? "translate-y-0 opacity-100"
                 : "translate-y-4 opacity-0"

@@ -60,7 +60,15 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  /* clip (not hidden) prevents horizontal scroll without creating a scroll
+     container — keeps position:sticky (hero) and Lenis working correctly. */
+  overflow-x: clip;
+}
+
+/* Avoid iOS auto-inflating large text in landscape */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Lenis */

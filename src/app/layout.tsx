@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
@@ -14,6 +14,13 @@ export const metadata: Metadata = {
       "A biomedical enthusiast and student admission consultant exploring health technology — research-driven, fast-learning, growth-minded.",
     type: "website",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0c0d0f",
 };
 
 export default function RootLayout({
