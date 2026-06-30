@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+/* ===========================================================================
+   Design tokens — dark neumorphic system inspired by the reference poster.
+   Charcoal/zinc surfaces, a single acid-green accent, layered soft shadows.
+   =========================================================================== */
+:root {
+  /* Surfaces */
+  --background: #0c0d0f;
+  --surface: #161719;
+  --surface-2: #1d1e21;
+  --foreground: #ededee;
+  --muted: #8a8d93;
+  --muted-2: #5d6066;
+  --border: rgba(255, 255, 255, 0.06);
+
+  /* Accent — the acid green from the reference */
+  --accent: #8cff3c;
+  --accent-dim: #6fd92e;
+
+  /* Neumorphic shadow stack — soft raised charcoal card.
+     Two dark drops for depth + one subtle inner top highlight. */
+  --neu-shadow:
+    8px 8px 20px rgba(0, 0, 0, 0.55),
+    16px 16px 40px rgba(0, 0, 0, 0.45),
+    -1px -1px 1px rgba(255, 255, 255, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  --neu-shadow-sm:
+    4px 4px 12px rgba(0, 0, 0, 0.5),
+    -1px -1px 1px rgba(255, 255, 255, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  /* Glow for accent elements */
+  --accent-glow: 0 0 24px rgba(140, 255, 60, 0.35);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: auto; /* Lenis drives scrolling; native smooth would fight it */
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ===========================================================================
+   Reusable surface utilities
+   =========================================================================== */
+.neu {
+  background: linear-gradient(145deg, var(--surface-2), var(--surface));
+  box-shadow: var(--neu-shadow);
+  border: 1px solid var(--border);
+}
+.neu-sm {
+  background: linear-gradient(145deg, var(--surface-2), var(--surface));
+  box-shadow: var(--neu-shadow-sm);
+  border: 1px solid var(--border);
+}
+.glass {
+  background: rgba(20, 21, 23, 0.6);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--border);
+}
+
+.accent-glow {
+  box-shadow: var(--accent-glow);
+}
+.text-accent {
+  color: var(--accent);
+}
+
+/* Big ghost wordmark behind the hero — like the reference */
+.ghost-text {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Thin scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-2);
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

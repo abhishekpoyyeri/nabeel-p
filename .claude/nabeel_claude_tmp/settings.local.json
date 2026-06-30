@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p _assets)",
+      "Bash(mv \"WhatsApp Image 2026-05-22 at 2.24.32 PM.jpeg\" _assets/person.jpeg)",
+      "Bash(mv \"WhatsApp Image 2026-06-30 at 7.44.13 PM.jpeg\" _assets/reference.jpeg)",
+      "Bash(mv SKILL.md _assets/SKILL.md)"
+    ]
+  }
+}
